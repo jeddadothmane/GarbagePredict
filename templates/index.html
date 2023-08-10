@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Garbage detection</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(166deg, rgba(0,108,230,1) 0%, rgba(0,120,255,1) 61%, rgba(49,214,248,1) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: black;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        input[type="file"] {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: white;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+
+            background: linear-gradient(166deg, rgba(0,108,230,1) 0%, rgba(0,120,255,1) 61%, rgba(49,214,248,1) 100%);
+            color: white;
+        }
+        #box{
+            background-color: white;
+            text-align: center;
+            border: none;
+            border-radius: 4px;
+            padding: 20px 20px;
+
+        }
+    </style>
+
+</head>
+<body>
+    <div id="box">
+        <h1 id="titre">Garbage detection</h1>
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*">
+            <button type="submit" onclick="predict()">Predict</button>
+        </form>
+    </div>
+<script>
+    function predict() {
+        const fileInput = document.querySelector('input[type="file"]');
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+
+        fetch('/predict', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.querySelector('p').innerText = `Prediction: ${data.prediction}`;
+                const resultImage = document.getElementById('resultImage');
+                resultImage.src = data.result_url; 
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = data.result_url;
+                downloadLink.style.display = 'block';
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+</body>
+
+</html>
